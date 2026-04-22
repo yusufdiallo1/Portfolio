@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -9,6 +10,14 @@ const BRAND_TEXT = "YusufCreates";
 
 export function NavBrandTyping({ reduceMotion }: { reduceMotion: boolean | null }) {
   const [displayed, setDisplayed] = useState("");
+  const router = useRouter();
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey) {
+      e.preventDefault();
+      router.push("/login");
+    }
+  };
 
   useEffect(() => {
     if (reduceMotion) {
@@ -41,6 +50,7 @@ export function NavBrandTyping({ reduceMotion }: { reduceMotion: boolean | null 
   return (
     <Link
       href="#hero"
+      onClick={handleLogoClick}
       className={cn(
         "liquid-pill font-mono inline-flex min-w-[12rem] items-center gap-0.5 px-3 py-1.5 text-sm text-white transition-[box-shadow] duration-300",
         "hover:shadow-[0_0_28px_rgba(255,255,255,0.08)]"

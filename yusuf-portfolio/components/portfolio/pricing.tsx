@@ -1,10 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useState } from "react";
 
 import { AccentButton } from "@/components/ui/accent-button";
 import { cn } from "@/lib/utils";
 import type { PricingTier } from "@/lib/portfolio-pricing";
+import { sounds } from "@/lib/sounds";
 
 const CHECK_COLORS = ["var(--js)", "var(--react)", "var(--go)"] as const;
 
@@ -34,6 +36,12 @@ type PricingProps = {
 
 export function Pricing({ tiers }: PricingProps) {
   const reduceMotion = useReducedMotion();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleScope = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+    sounds.click();
+  };
 
   return (
     <section
@@ -69,12 +77,14 @@ export function Pricing({ tiers }: PricingProps) {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:items-stretch">
           {tiers.map((tier) => {
             const highlighted = tier.highlighted;
+            const isExpanded = expandedId === tier.id;
+
             return (
               <motion.article
                 key={tier.id}
                 variants={fadeUp}
                 className={cn(
-                  "relative flex flex-col overflow-hidden rounded-xl border transition-[transform,box-shadow] duration-300",
+                  "relative flex flex-col overflow-hidden rounded-xl border transition-[transform,box-shadow,border-color] duration-300",
                   highlighted
                     ? "glass-strong z-[1] scale-[1.02] border-[var(--glass-border-hover)] md:-mt-2 md:mb-2"
                     : "liquid-surface border-[var(--glass-border)]"
@@ -124,12 +134,40 @@ export function Pricing({ tiers }: PricingProps) {
                     ))}
                   </ul>
 
+                  <AnimatePresence>
+                    {isExpanded && tier.fullScope && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-6 border-t border-[var(--glass-border)]/50 pt-6">
+                          <p className="font-mono text-xs leading-relaxed text-[var(--text-secondary)]">
+                            {tier.fullScope}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <button
+                    type="button"
+                    onClick={() => toggleScope(tier.id)}
+                    className="mt-6 self-start font-mono text-[10px] uppercase tracking-widest text-[var(--text-muted)] transition-colors hover:text-white"
+                  >
+                    {isExpanded ? "− Hide Scope" : "+ View Full Scope"}
+                  </button>
+
                   <div className="mt-8">
                     <AccentButton
                       type="button"
                       variant={highlighted ? "filled" : "ghost"}
                       className="w-full font-mono"
-                      onClick={scrollToHire}
+                      onClick={() => {
+                        scrollToHire();
+                        sounds.click();
+                      }}
                     >
                       Start a project
                     </AccentButton>

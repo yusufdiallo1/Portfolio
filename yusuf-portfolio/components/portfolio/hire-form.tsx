@@ -22,6 +22,7 @@ import {
 } from "@/lib/hire-schema";
 import { getTechColor } from "@/lib/tech-colors";
 import { cn } from "@/lib/utils";
+import { sounds } from "@/lib/sounds";
 
 const STEPS = [
   { id: 1, short: "You", title: "About You" },
@@ -130,6 +131,7 @@ export function HireForm() {
       ? techPrefs.filter((t) => t !== tech)
       : [...techPrefs, tech];
     setValue("techPreferences", next, { shouldValidate: true });
+    sounds.click();
   }
 
   function toggleAccent(label: string) {
@@ -137,6 +139,7 @@ export function HireForm() {
       ? colorAccents.filter((t) => t !== label)
       : [...colorAccents, label];
     setValue("colorAccents", next, { shouldValidate: true });
+    sounds.click();
   }
 
   async function goNext() {
@@ -145,11 +148,13 @@ export function HireForm() {
     if (!ok) return;
     setDirection(1);
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    sounds.click();
   }
 
   function goBack() {
     setDirection(-1);
     setStep((s) => Math.max(s - 1, 0));
+    sounds.click();
   }
 
   async function onSubmit(values: HireFormValues) {
@@ -165,6 +170,7 @@ export function HireForm() {
         return;
       }
       toast.success("Request received. I'll respond within 24h.");
+      sounds.success();
       reset();
       setStep(0);
     } catch {
@@ -221,6 +227,7 @@ export function HireForm() {
                       if (i < step) {
                         setDirection(-1);
                         setStep(i);
+                        sounds.click();
                       }
                     }}
                     className={cn(

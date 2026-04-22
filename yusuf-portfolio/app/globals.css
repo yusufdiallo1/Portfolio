@@ -1,3 +1,24 @@
+@layer base {
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  [data-theme="light"] {
+    --bg: #f8f8f5;
+    --bg-elevated: #ffffff;
+    --glass-bg: rgba(0, 0, 0, 0.03);
+    --glass-bg-hover: rgba(0, 0, 0, 0.06);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-hover: rgba(0, 0, 0, 0.18);
+    --text-primary: #0a0a0a;
+    --text-secondary: rgba(0, 0, 0, 0.5);
+    --text-muted: rgba(0, 0, 0, 0.3);
+    --liquid-bg: rgba(0, 0, 0, 0.04);
+    --liquid-bg-strong: rgba(0, 0, 0, 0.07);
+    --liquid-border: rgba(0, 0, 0, 0.1);
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -354,6 +375,27 @@
     transform: translateY(110vh) rotate(12deg);
     opacity: 0.12;
   }
+  @keyframes availability-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .animate-availability-sweep {
+    animation: availability-sweep 3s ease-in-out infinite;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .hero-marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+
+  .syntax-keyword { color: var(--rust); }
+  .syntax-fn { color: var(--js); }
+  .syntax-string { color: var(--go); }
 }
 
 @layer utilities {

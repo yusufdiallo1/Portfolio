@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { sounds } from "@/lib/sounds";
 
 const accentButtonVariants = cva(
   "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-[color,background-color,box-shadow,border-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black active:scale-[0.97]",
@@ -39,6 +40,8 @@ export function AccentButton({
   codeBorderColor = "var(--react)",
   style,
   type = "button",
+  onClick,
+  onMouseEnter,
   ...props
 }: AccentButtonProps) {
   const mergedStyle: React.CSSProperties =
@@ -55,6 +58,14 @@ export function AccentButton({
       type={type}
       className={cn(accentButtonVariants({ variant, size }), className)}
       style={mergedStyle}
+      onClick={(e) => {
+        sounds.click();
+        onClick?.(e);
+      }}
+      onMouseEnter={(e) => {
+        sounds.hover();
+        onMouseEnter?.(e);
+      }}
       {...props}
     />
   );

@@ -8,6 +8,7 @@ export type PricingTier = {
   description: string;
   features: string[];
   highlighted: boolean;
+  fullScope?: string;
 };
 
 const FALLBACK: PricingTier[] = [
@@ -18,13 +19,14 @@ const FALLBACK: PricingTier[] = [
     billingPeriod: "project",
     description: "Landing Page or Simple App",
     features: [
-      "1 page / single feature",
+      "1 page",
       "Fully responsive",
       "3-day delivery",
       "1 revision round",
       "Deployed to Vercel",
     ],
     highlighted: false,
+    fullScope: "A professional single-page landing page optimized for conversions. Includes SEO optimization, lightning-fast performance, and a custom contact form. Perfect for startups or individual projects needing a quick, high-quality web presence.",
   },
   {
     id: "fallback-pro",
@@ -41,6 +43,7 @@ const FALLBACK: PricingTier[] = [
       "3 revision rounds",
     ],
     highlighted: true,
+    fullScope: "A complete multipage web application with user authentication and database integration. Features include a custom administrative dashboard, real-time data sync, and integration with third-party services. Ideal for businesses scaling their operations.",
   },
   {
     id: "fallback-elite",
@@ -54,9 +57,10 @@ const FALLBACK: PricingTier[] = [
       "Payments (Stripe)",
       "Analytics dashboard",
       "14-day delivery",
-      "Unlimited revisions",
+      "5 revision rounds",
     ],
     highlighted: false,
+    fullScope: "The ultimate solution for high-growth SaaS platforms. Includes everything in Pro, plus advanced AI feature integrations (LLMs, computer vision), end-to-end payment processing with Stripe, and deep analytics. Unlimited scalability and high-performance infrastructure.",
   },
 ];
 
@@ -75,6 +79,15 @@ function mapRow(row: Record<string, unknown>): PricingTier | null {
     ? (row.features as unknown[]).map(String)
     : [];
   const highlighted = Boolean(row.highlighted);
+  
+  // Custom logic for Elite and Starter modifications as requested
+  let finalFeatures = [...features];
+  if (name.toLowerCase().includes("elite")) {
+    finalFeatures = finalFeatures.map(f => f.toLowerCase().includes("revision") ? "5 revision rounds" : f);
+  }
+  if (name.toLowerCase().includes("starter")) {
+    finalFeatures = finalFeatures.filter(f => !f.toLowerCase().includes("1 feature"));
+  }
 
   return {
     id,
@@ -82,8 +95,9 @@ function mapRow(row: Record<string, unknown>): PricingTier | null {
     price,
     billingPeriod,
     description,
-    features,
+    features: finalFeatures,
     highlighted,
+    fullScope: (row.full_scope as string) || (FALLBACK.find(f => f.name === name)?.fullScope) || "",
   };
 }
 
@@ -93,7 +107,7 @@ export async function fetchPortfolioPricing(): Promise<PricingTier[]> {
     if (!supabase) return FALLBACK;
     const { data, error } = await supabase
       .from("pricing")
-      .select("id, name, price, billing_period, description, features, highlighted, sort_order")
+      .select("id, name, price, billing_period, description, features, highlighted, sort_order, full_scope")
       .order("sort_order", { ascending: true, nullsFirst: false });
 
     if (error) return FALLBACK;

@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 
 import { PageAtmosphere } from "@/components/ui/page-atmosphere";
 import { Providers } from "@/components/providers";
+import { EasterEgg } from "@/components/ui/easter-egg";
 import { cn } from "@/lib/utils";
 
 const instrumentSerif = Instrument_Serif({
@@ -49,6 +50,7 @@ export default function RootLayout({
     >
       <body className="relative min-h-screen bg-[var(--bg)] font-mono text-[var(--text-primary)] antialiased">
         <PageAtmosphere />
+        <EasterEgg />
         <div className="relative z-10 min-h-screen">
           <Providers>{children}</Providers>
         </div>

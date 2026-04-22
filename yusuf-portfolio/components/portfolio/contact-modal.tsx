@@ -23,6 +23,7 @@ import {
 import { contactFormSchema, type ContactFormValues } from "@/lib/contact-schema";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { sounds } from "@/lib/sounds";
 
 type ContactModalContextValue = {
   open: () => void;
@@ -62,6 +63,7 @@ function ContactModalDialog({
   useEffect(() => {
     if (open) {
       void track("contact_open", { source: "modal" });
+      sounds.open();
     }
   }, [open]);
 
@@ -84,6 +86,7 @@ function ContactModalDialog({
         return;
       }
       toast.success("Message sent. I'll be in touch.");
+      sounds.success();
       onOpenChange(false);
       reset();
     } catch {

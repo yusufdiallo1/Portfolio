@@ -25,6 +25,15 @@ function isAllowedPath(pathname: string) {
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // Basic security: if trying to access dashboard but no session cookie exists, redirect to login
+  // Note: Deep validation happens in the layout, this is just a quick preventative layer.
+  if (pathname.startsWith("/dashboard")) {
+    const session = request.cookies.get("session");
+    if (!session) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
   if (!isAllowedPath(pathname)) {
     return NextResponse.redirect(new URL("/", request.url));
   }

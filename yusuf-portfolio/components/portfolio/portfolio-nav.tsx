@@ -7,6 +7,9 @@ import { X, Menu } from "lucide-react";
 import { useContactModal } from "@/components/portfolio/contact-modal";
 import { NavBrandTyping } from "@/components/portfolio/nav-brand-typing";
 import { AccentButton } from "@/components/ui/accent-button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { SoundToggle } from "@/components/ui/sound-toggle";
+import { sounds } from "@/lib/sounds";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -92,15 +95,7 @@ export function PortfolioNav({ bannerOffsetPx = 0 }: PortfolioNavProps) {
 
             {/* Mobile: hamburger */}
             <div className="flex items-center gap-3 md:hidden">
-              <AccentButton
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="shrink-0 border-0 bg-transparent font-mono shadow-none"
-                onClick={openContact}
-              >
-                Contact
-              </AccentButton>
+              <ThemeToggle />
               <button
                 type="button"
                 onClick={() => setMenuOpen((v) => !v)}
@@ -131,7 +126,11 @@ export function PortfolioNav({ bannerOffsetPx = 0 }: PortfolioNavProps) {
                   )}
                   <button
                     type="button"
-                    onClick={() => scrollToId(item.id)}
+                    onClick={() => {
+                      scrollToId(item.id);
+                      sounds.click();
+                    }}
+                    onMouseEnter={() => sounds.hover()}
                     className={cn(
                       "shrink-0 rounded-full px-2.5 py-1.5 text-xs transition-colors md:px-3 md:text-[13px]",
                       active
@@ -147,7 +146,9 @@ export function PortfolioNav({ bannerOffsetPx = 0 }: PortfolioNavProps) {
             })}
           </nav>
 
-          <div className="hidden justify-end md:flex">
+          <div className="hidden justify-end items-center gap-4 md:flex">
+            <SoundToggle />
+            <ThemeToggle />
             <AccentButton
               type="button"
               variant="ghost"
@@ -172,6 +173,9 @@ export function PortfolioNav({ bannerOffsetPx = 0 }: PortfolioNavProps) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <nav className="flex h-full w-full flex-col justify-center gap-2 px-10 pt-24">
+              <div className="mb-8 flex justify-between items-center">
+                <SoundToggle />
+              </div>
               {NAV.map((item, i) => (
                 <motion.button
                   key={item.id}
@@ -181,8 +185,10 @@ export function PortfolioNav({ bannerOffsetPx = 0 }: PortfolioNavProps) {
                   transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 28 }}
                   onClick={() => {
                     setMenuOpen(false);
+                    sounds.click();
                     setTimeout(() => scrollToId(item.id), 200);
                   }}
+                  onMouseEnter={() => sounds.hover()}
                   className="font-display text-left text-4xl font-normal tracking-tight text-[var(--text-secondary)] transition-colors hover:text-white active:scale-95"
                   style={activeSection === item.id ? { color: item.color } : undefined}
                 >

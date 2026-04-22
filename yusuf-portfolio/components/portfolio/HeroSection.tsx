@@ -204,7 +204,7 @@ export function HeroSection() {
     >
       {/* 3D animated background layer */}
       <motion.div 
-        className="absolute inset-0 z-0" 
+        className="absolute inset-0 z-0 hero-parallax-layer" 
         style={{ y: parallaxSpring }}
       >
         <ErrorBoundary fallback={<CanvasFallback />}>

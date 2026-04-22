@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 import { getTechColor } from "@/lib/tech-colors";
 import { cn } from "@/lib/utils";
+import { sounds } from "@/lib/sounds";
 
 type TechBadgeProps = {
   tech: string;
@@ -17,6 +18,7 @@ export function TechBadge({ tech, size = "md", className }: TechBadgeProps) {
   return (
     <motion.span
       data-tech-color={color}
+      onMouseEnter={() => sounds.hover()}
       whileHover={{
         scale: 1.02,
         boxShadow: `0 0 20px color-mix(in srgb, ${color} 28%, transparent)`,
