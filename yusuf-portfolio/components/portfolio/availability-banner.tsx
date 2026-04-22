@@ -49,14 +49,27 @@ export function AvailabilityBanner({ config }: Props) {
   return (
     <div
       className={cn(
-        "fixed left-0 right-0 top-0 z-[100] flex h-9 w-full items-center border-b border-[var(--glass-border)] bg-black",
+        "fixed left-0 right-0 top-0 z-[210] flex h-10 w-full items-center border-b border-white/10 bg-black/80 backdrop-blur-md overflow-hidden",
         config.status === "available" && "availability-banner--available"
       )}
       role="region"
       aria-label="Availability"
     >
-      <div className="mx-auto flex w-full max-w-wide items-center justify-between gap-3 px-gutter font-mono text-[11px] text-[var(--text-secondary)] md:text-xs">
-        <p className="flex min-w-0 flex-1 items-center gap-2 truncate">
+      {/* Animated glow background */}
+      {config.status === "available" && (
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--react)] to-transparent animate-availability-sweep" />
+        </div>
+      )}
+      
+      <div className="relative z-10 mx-auto flex w-full max-w-wide items-center justify-between gap-3 px-gutter font-mono text-[11px] text-[var(--text-secondary)] md:text-xs">
+        <p className="flex min-w-0 flex-1 items-center gap-2.5 truncate">
+          {config.status === "available" ? (
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--react)] opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--react)]"></span>
+            </span>
+          ) : null}
           {labelForStatus(config.status, config.message)}
         </p>
         {url ? (
@@ -64,9 +77,10 @@ export function AvailabilityBanner({ config }: Props) {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 font-mono text-[11px] text-[var(--react)] transition-colors hover:underline md:text-xs"
+            className="group flex items-center gap-1.5 shrink-0 rounded-full border border-[var(--react)]/30 bg-[var(--react)]/10 px-3 py-1 font-mono text-[10px] text-[var(--react)] transition-all hover:bg-[var(--react)] hover:text-black md:text-[11px]"
           >
-            Book a Call →
+            <span>Book a Call</span>
+            <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </Link>
         ) : null}
       </div>

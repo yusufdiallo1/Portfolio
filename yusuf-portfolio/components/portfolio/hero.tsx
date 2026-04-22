@@ -385,7 +385,7 @@ function HeroTypingQuote({ reduceMotion }: { reduceMotion: boolean | null }) {
       window.clearTimeout(startTimer);
       if (intervalId !== undefined) window.clearInterval(intervalId);
     };
-  }, [reduceMotion]);
+  }, [reduceMotion, quote]);
 
   return (
     <motion.blockquote

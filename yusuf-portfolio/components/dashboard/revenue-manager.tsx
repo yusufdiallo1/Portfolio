@@ -1,6 +1,6 @@
 "use client";
 
-import { DollarSign, Edit2, Plus, Trash2, X } from "lucide-react";
+import { Edit2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {

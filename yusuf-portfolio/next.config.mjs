@@ -3,6 +3,8 @@ const nextConfig = {
   // Always wipe .next on startup — prevents stale-chunk 500/404 errors
   cleanDistDir: true,
 
+  transpilePackages: ["three"],
+
   webpack(config, { dev }) {
     if (dev) {
       // Disable webpack filesystem cache in dev — prevents chunk-manifest

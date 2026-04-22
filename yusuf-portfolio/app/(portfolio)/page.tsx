@@ -10,13 +10,27 @@ import { fetchPortfolioProjects } from "@/lib/portfolio-projects";
 import { fetchPortfolioTestimonials } from "@/lib/portfolio-testimonials";
 
 export default async function PortfolioHomePage() {
-  const [sections, projects, pricingTiers, testimonials, builds] = await Promise.all([
-    fetchPageSections(),
-    fetchPortfolioProjects(),
-    fetchPortfolioPricing(),
-    fetchPortfolioTestimonials(),
-    fetchCurrentBuilds(),
-  ]);
+  let sections, projects, pricingTiers, testimonials, builds;
+
+  try {
+    [sections, projects, pricingTiers, testimonials, builds] = await Promise.all([
+      fetchPageSections(),
+      fetchPortfolioProjects(),
+      fetchPortfolioPricing(),
+      fetchPortfolioTestimonials(),
+      fetchCurrentBuilds(),
+    ]);
+  } catch (err) {
+    console.error("[PortfolioHomePage] Data fetch failed:", err);
+    // Fallbacks are already handled inside each fetch function, 
+    // but we catch here to prevent a total page crash if something 
+    // truly unexpected happens (e.g. Promise.all itself failing).
+    sections = await fetchPageSections();
+    projects = await fetchPortfolioProjects();
+    pricingTiers = await fetchPortfolioPricing();
+    testimonials = await fetchPortfolioTestimonials();
+    builds = await fetchCurrentBuilds();
+  }
 
   return (
     <>

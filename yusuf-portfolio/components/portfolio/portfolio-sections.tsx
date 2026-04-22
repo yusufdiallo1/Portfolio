@@ -40,14 +40,24 @@ export function PortfolioSectionList({ sections, projects, pricingTiers, testimo
 
   // Build the ordered section list, injecting our new sections after "projects" and after "faq"
   const orderedSections: Array<{ key: string; isDbSection: boolean }> = [];
-  for (const s of sections) {
-    orderedSections.push({ key: s.section_key, isDbSection: true });
-    if (s.section_key === "projects") {
-      orderedSections.push({ key: "currently-building", isDbSection: false });
+  
+  if (!sections || sections.length === 0) {
+    orderedSections.push({ key: "hero", isDbSection: false });
+  } else {
+    for (const s of sections) {
+      orderedSections.push({ key: s.section_key, isDbSection: true });
+      if (s.section_key === "projects") {
+        orderedSections.push({ key: "currently-building", isDbSection: false });
+      }
+      if (s.section_key === "faq") {
+        orderedSections.push({ key: "newsletter", isDbSection: false });
+      }
     }
-    if (s.section_key === "faq") {
-      orderedSections.push({ key: "newsletter", isDbSection: false });
-    }
+  }
+
+  // Ensure hero is always present if for some reason DB sections were returned but didn't include it
+  if (!orderedSections.some(s => s.key === "hero")) {
+    orderedSections.unshift({ key: "hero", isDbSection: false });
   }
 
   return (

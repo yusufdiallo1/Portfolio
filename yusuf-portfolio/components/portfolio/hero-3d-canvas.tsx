@@ -1,9 +1,9 @@
 "use client";
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, Stars, MeshDistortMaterial, Icosahedron, Torus, Sphere } from "@react-three/drei";
-import { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Float, Stars, Icosahedron, Torus, Sphere } from "@react-three/drei";
+import { useEffect, useRef, useMemo, useState } from "react";
 
 const C = {
   react: "#61dafb",
@@ -36,94 +36,55 @@ function CameraRig() {
   return null;
 }
 
-function GlowSphere({ position }: { position: [number, number, number] }) {
-  const meshRef = useRef<THREE.Mesh>(null!);
+function FloatingShape({ 
+  Shape, 
+  args, 
+  position, 
+  color, 
+  speed = 1, 
+  rotationSpeed = 1 
+}: { 
+  Shape: any, 
+  args: any, 
+  position: [number, number, number], 
+  color: string, 
+  speed?: number, 
+  rotationSpeed?: number 
+}) {
+  const ref = useRef<THREE.Mesh>(null);
   useFrame((state) => {
-    meshRef.current.rotation.x = state.clock.elapsedTime * 0.12;
-    meshRef.current.rotation.y = state.clock.elapsedTime * 0.18;
+    if (!ref.current) return;
+    const t = state.clock.elapsedTime;
+    ref.current.rotation.x = t * 0.1 * rotationSpeed;
+    ref.current.rotation.y = t * 0.15 * rotationSpeed;
   });
+
   return (
-    <Float speed={1.4} rotationIntensity={0.4} floatIntensity={1.2}>
-      <Sphere ref={meshRef} args={[1.35, 64, 64]} position={position}>
-        <MeshDistortMaterial
-          color={C.react}
-          emissive={C.react}
-          emissiveIntensity={0.22}
-          distort={0.42}
-          speed={2.2}
-          roughness={0.08}
-          metalness={0.85}
+    <Float speed={speed} rotationIntensity={0.5} floatIntensity={1}>
+      <Shape ref={ref} args={args} position={position}>
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.15}
+          wireframe
           transparent
-          opacity={0.72}
+          opacity={0.12}
+          roughness={0}
+          metalness={1}
         />
-      </Sphere>
+      </Shape>
     </Float>
-  );
-}
-
-function SpinningTorus({ position, color }: { position: [number, number, number]; color: string }) {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame((state) => {
-    ref.current.rotation.x = state.clock.elapsedTime * 0.22;
-    ref.current.rotation.y = state.clock.elapsedTime * 0.14;
-    ref.current.rotation.z = state.clock.elapsedTime * 0.09;
-  });
-  return (
-    <Float speed={1.8} floatIntensity={1.6} rotationIntensity={0.6}>
-      <Torus ref={ref} args={[0.7, 0.22, 32, 100]} position={position}>
-        <meshStandardMaterial
-          color={color} emissive={color} emissiveIntensity={0.35}
-          roughness={0.1} metalness={0.9} transparent opacity={0.8}
-        />
-      </Torus>
-    </Float>
-  );
-}
-
-function WireIco({ position, color }: { position: [number, number, number]; color: string }) {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame((state) => {
-    ref.current.rotation.x = state.clock.elapsedTime * 0.17;
-    ref.current.rotation.y = state.clock.elapsedTime * 0.25;
-  });
-  return (
-    <Float speed={1.2} floatIntensity={1.0} rotationIntensity={0.8}>
-      <Icosahedron ref={ref} args={[0.9, 1]} position={position}>
-        <meshStandardMaterial
-          color={color} emissive={color} emissiveIntensity={0.4}
-          roughness={0.05} metalness={1} wireframe
-        />
-      </Icosahedron>
-    </Float>
-  );
-}
-
-function AccentOrbs() {
-  const configs = useMemo(() => [
-    { pos: [-4.5,  2.2, -3] as [number,number,number], color: C.js,   s: 0.18, sp: 2.2 },
-    { pos: [ 4.2,  1.8, -4] as [number,number,number], color: C.css,  s: 0.14, sp: 1.6 },
-    { pos: [-3.8, -2.4, -2] as [number,number,number], color: C.go,   s: 0.22, sp: 2.8 },
-    { pos: [ 3.5, -1.6, -3] as [number,number,number], color: C.rust, s: 0.16, sp: 2.0 },
-    { pos: [ 0.8,  3.1, -5] as [number,number,number], color: C.ts,   s: 0.12, sp: 3.1 },
-  ], []);
-
-  return (
-    <>
-      {configs.map((c, i) => (
-        <Float key={i} speed={c.sp} floatIntensity={2} rotationIntensity={0}>
-          <Sphere args={[c.s, 16, 16]} position={c.pos}>
-            <meshStandardMaterial
-              color={c.color} emissive={c.color} emissiveIntensity={0.9}
-              roughness={0} metalness={1}
-            />
-          </Sphere>
-        </Float>
-      ))}
-    </>
   );
 }
 
 export default function Hero3DCanvas() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <Canvas
       camera={{ position: [0, 0, 7], fov: 55, near: 0.1, far: 200 }}
@@ -139,20 +100,48 @@ export default function Hero3DCanvas() {
     >
       <CameraRig />
 
-      <ambientLight intensity={0.08} />
-      <directionalLight position={[5, 8, 5]}   intensity={1.2} color={C.react} />
-      <directionalLight position={[-8, -4, -6]} intensity={0.6} color={C.ts} />
-      <pointLight position={[0, 0, 4]}   intensity={2.0} color={C.react} distance={12} decay={2} />
-      <pointLight position={[-5, 3, -2]} intensity={1.0} color={C.go}    distance={10} decay={2} />
-      <pointLight position={[5, -3, 0]}  intensity={0.8} color={C.css}   distance={8}  decay={2} />
+      <ambientLight intensity={0.2} />
+      <pointLight position={[10, 10, 10]} intensity={0.5} />
+      
+      <Stars 
+        radius={100} 
+        depth={50} 
+        count={5000} 
+        factor={4} 
+        saturation={0} 
+        fade 
+        speed={1} 
+      />
 
-      <Stars radius={90} depth={60} count={5500} factor={4} saturation={0.6} fade speed={0.4} />
-
-      <GlowSphere position={[2.6, 0.3, 0]} />
-      <SpinningTorus position={[-3.2, 0.8, -1.5]} color={C.ts} />
-      <WireIco position={[3.8, 2.4, -2]}   color={C.js} />
-      <WireIco position={[-2.4, -2.2, -3]} color={C.css} />
-      <AccentOrbs />
+      {/* Subtle floating wireframes */}
+      <FloatingShape 
+        Shape={Icosahedron} 
+        args={[1.5, 1]} 
+        position={[3, 2, -5]} 
+        color="#ffffff" 
+        speed={1.2} 
+      />
+      <FloatingShape 
+        Shape={Torus} 
+        args={[2, 0.05, 16, 100]} 
+        position={[-4, -2, -8]} 
+        color="#ffffff" 
+        speed={0.8} 
+      />
+      <FloatingShape 
+        Shape={Sphere} 
+        args={[1, 32, 32]} 
+        position={[5, -3, -10]} 
+        color="#ffffff" 
+        speed={1.5} 
+      />
+      <FloatingShape 
+        Shape={Icosahedron} 
+        args={[2, 0]} 
+        position={[-6, 4, -12]} 
+        color="#ffffff" 
+        speed={0.5} 
+      />
     </Canvas>
   );
 }
