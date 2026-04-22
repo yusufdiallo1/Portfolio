@@ -47,8 +47,12 @@ export async function POST(request: Request) {
     });
 
     if (insertError) {
-      console.error("[setup]", insertError);
-      return NextResponse.json({ error: "Could not save credentials" }, { status: 500 });
+      console.error("[setup] insert error:", insertError.code, insertError.message);
+      const msg =
+        insertError.code === "23505"
+          ? "Admin ID already taken. Choose a different one."
+          : `Could not save credentials (${insertError.code ?? "unknown"})`;
+      return NextResponse.json({ error: msg }, { status: 500 });
     }
 
     const token = await signDashboardToken(adminId);

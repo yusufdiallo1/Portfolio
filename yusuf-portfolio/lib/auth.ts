@@ -52,16 +52,21 @@ function parseCookieHeader(cookieHeader: string | null, name: string): string | 
  * Read `dashboard_session` JWT from a Request (API routes) or from Next cookies (Server Components).
  */
 export async function getSession(request?: Request): Promise<{ adminId: string } | null> {
-  let token: string | null | undefined;
-  if (request) {
-    token = parseCookieHeader(request.headers.get("cookie"), DASHBOARD_SESSION_COOKIE);
-  } else {
-    token = cookies().get(DASHBOARD_SESSION_COOKIE)?.value;
+  try {
+    let token: string | null | undefined;
+    if (request) {
+      token = parseCookieHeader(request.headers.get("cookie"), DASHBOARD_SESSION_COOKIE);
+    } else {
+      const cookieStore = cookies();
+      token = cookieStore.get(DASHBOARD_SESSION_COOKIE)?.value;
+    }
+    if (!token) return null;
+    const payload = await verifyDashboardToken(token);
+    if (!payload) return null;
+    return { adminId: payload.adminId };
+  } catch {
+    return null;
   }
-  if (!token) return null;
-  const payload = await verifyDashboardToken(token);
-  if (!payload) return null;
-  return { adminId: payload.adminId };
 }
 
 export const SESSION_COOKIE_OPTIONS = {

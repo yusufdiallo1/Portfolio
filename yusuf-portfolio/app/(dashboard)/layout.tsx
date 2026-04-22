@@ -10,6 +10,15 @@ export default async function DashboardGroupLayout({
   children: React.ReactNode;
 }) {
   const pathname = headers().get("x-pathname") ?? "";
+
+  /**
+   * If middleware didn't attach x-pathname (shouldn't happen with a broad matcher),
+   * skip auth redirects — otherwise `"" !== "/login"` forces redirect("/login") forever.
+   */
+  if (!pathname) {
+    return <>{children}</>;
+  }
+
   const session = await getSession();
   const hasAdmin = await hasAdminCredentials();
 

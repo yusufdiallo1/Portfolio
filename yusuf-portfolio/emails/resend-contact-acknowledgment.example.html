@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+  Example: contact form acknowledgment — copy into Resend or merge with resend-base-transactional.html
+  Variables: first_name, message_preview, site_url, year
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>We got your message · YusufCreates</title>
+  </head>
+  <body style="margin: 0; background: #000; font-family: system-ui, sans-serif">
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 32px 16px">
+      <tr>
+        <td align="center">
+          <table width="100%" style="max-width: 560px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); background: #0a0a0a">
+            <tr>
+              <td style="padding: 28px">
+                <p style="margin: 0 0 8px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.45)">YusufCreates</p>
+                <h1 style="margin: 0 0 16px; font-size: 22px; color: #fff; font-weight: 600">Thanks, {{first_name}}</h1>
+                <p style="margin: 0; font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.85)">
+                  Your message is in my inbox. I’ll reply personally — usually within 24 hours.
+                </p>
+                <p style="margin: 20px 0 0; padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.04); border-left: 3px solid #61dafb; font-size: 13px; color: rgba(255,255,255,0.65)">
+                  “{{message_preview}}”
+                </p>
+                <p style="margin: 24px 0 0; font-size: 12px; color: rgba(255,255,255,0.35)">— YusufCreates</p>
+              </td>
+            </tr>
+          </table>
+          <p style="margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.28)">© {{year}} YusufCreates</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

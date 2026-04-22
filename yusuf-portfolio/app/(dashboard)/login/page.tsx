@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import Link from "next/link";
+
 import { CodeRain } from "@/components/dashboard/code-rain";
 import { AccentButton } from "@/components/ui/accent-button";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -111,6 +113,17 @@ export default function LoginPage() {
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-[var(--bg)] px-4 py-12">
       <CodeRain />
+
+      {/* Logo — back to portfolio */}
+      <Link
+        href="/"
+        className="absolute left-1/2 top-8 z-10 -translate-x-1/2 flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-white/[0.04] px-4 py-2 backdrop-blur-md transition-[border-color,background] hover:border-[var(--glass-border-hover)] hover:bg-white/[0.07]"
+        aria-label="Back to portfolio"
+      >
+        <span className="font-display text-lg font-normal tracking-[-0.02em] text-white">YD</span>
+        <span className="font-mono text-[11px] text-[var(--text-muted)]">← portfolio</span>
+      </Link>
+
       <GlassCard className="relative z-10 w-full max-w-[400px] overflow-hidden p-8">
         <AnimatePresence mode="wait">
           {step === "id" ? (

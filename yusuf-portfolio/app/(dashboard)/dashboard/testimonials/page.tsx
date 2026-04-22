@@ -1,7 +1,7 @@
-export default function DashboardTestimonialsPage() {
-  return (
-    <main className="p-8">
-      <h1 className="text-heading-lg font-semibold">Testimonials</h1>
-    </main>
-  );
+import { TestimonialsManager } from "@/components/dashboard/testimonials-manager";
+import { fetchDashboardTestimonials } from "@/lib/dashboard-queries";
+
+export default async function DashboardTestimonialsPage() {
+  const rows = await fetchDashboardTestimonials();
+  return <TestimonialsManager initialRows={rows} />;
 }

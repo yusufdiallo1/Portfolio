@@ -1,7 +1,10 @@
-export default function DashboardContactsPage() {
-  return (
-    <main className="p-8">
-      <h1 className="text-heading-lg font-semibold">Contacts</h1>
-    </main>
-  );
+import { ContactsManager } from "@/components/dashboard/contacts-manager";
+import { fetchDashboardContactMessages, fetchDashboardHireRequests } from "@/lib/dashboard-queries";
+
+export default async function DashboardContactsPage() {
+  const [messages, hires] = await Promise.all([
+    fetchDashboardContactMessages(),
+    fetchDashboardHireRequests(),
+  ]);
+  return <ContactsManager initialMessages={messages} initialHires={hires} />;
 }

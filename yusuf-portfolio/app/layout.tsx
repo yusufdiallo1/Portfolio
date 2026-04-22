@@ -1,10 +1,11 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
 import { PageAtmosphere } from "@/components/ui/page-atmosphere";
 import { Providers } from "@/components/providers";
-import "./globals.css";
 import { cn } from "@/lib/utils";
 
 const instrumentSerif = Instrument_Serif({
@@ -29,8 +30,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Yusuf Portfolio",
-    template: "%s · Yusuf Portfolio",
+    default: "YusufCreates",
+    template: "%s · YusufCreates",
   },
   description: "Portfolio and dashboard",
 };

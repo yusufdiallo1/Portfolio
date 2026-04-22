@@ -47,13 +47,14 @@ create table if not exists public.testimonials (
   created_at timestamptz default now()
 );
 
--- ── Contact messages
-create table if not exists public.contacts (
+-- ── Contact messages (aligned with app + /api/contact)
+create table if not exists public.contact_messages (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   email text not null,
   message text not null,
   read boolean default false,
+  replied boolean default false,
   created_at timestamptz default now()
 );
 
@@ -68,6 +69,7 @@ create table if not exists public.hire_requests (
   description text not null,
   tech_stack text[],
   status text default 'new',
+  replied boolean default false,
   created_at timestamptz default now()
 );
 
@@ -88,6 +90,31 @@ create table if not exists public.analytics (
   ip_hash text,
   created_at timestamptz default now()
 );
+
+-- ── Site config (availability banner, Calendly URL, etc.)
+create table if not exists public.site_config (
+  id uuid primary key default gen_random_uuid(),
+  key text unique not null,
+  value text not null,
+  updated_at timestamptz default now()
+);
+
+create index if not exists site_config_key_idx on public.site_config (key);
+
+-- ── Referrals
+create table if not exists public.referrals (
+  id uuid primary key default gen_random_uuid(),
+  referrer_name text not null,
+  referrer_email text not null,
+  referred_name text not null,
+  referred_email text not null,
+  message text,
+  status text not null default 'pending',
+  reward_amount text not null default '10% discount',
+  created_at timestamptz default now()
+);
+
+create index if not exists referrals_created_at_idx on public.referrals (created_at desc);
 
 -- ── updated_at (admin_credentials)
 create or replace function public.set_updated_at()
@@ -112,9 +139,11 @@ alter table public.projects enable row level security;
 alter table public.pricing enable row level security;
 alter table public.testimonials enable row level security;
 alter table public.page_sections enable row level security;
-alter table public.contacts enable row level security;
+alter table public.contact_messages enable row level security;
 alter table public.hire_requests enable row level security;
 alter table public.analytics enable row level security;
+alter table public.site_config enable row level security;
+alter table public.referrals enable row level security;
 
 -- admin_credentials: no policies — anon/authenticated cannot access. Service role bypasses RLS.
 
@@ -122,9 +151,11 @@ drop policy if exists "projects_select_public" on public.projects;
 drop policy if exists "pricing_select_public" on public.pricing;
 drop policy if exists "page_sections_select_public" on public.page_sections;
 drop policy if exists "testimonials_select_public" on public.testimonials;
-drop policy if exists "contacts_insert_anon" on public.contacts;
+drop policy if exists "contact_messages_insert_anon" on public.contact_messages;
 drop policy if exists "hire_requests_insert_anon" on public.hire_requests;
 drop policy if exists "analytics_insert_anon" on public.analytics;
+drop policy if exists "site_config_select_public" on public.site_config;
+drop policy if exists "referrals_insert_anon" on public.referrals;
 
 -- projects, pricing, page_sections: public read
 create policy "projects_select_public"
@@ -148,9 +179,9 @@ create policy "testimonials_select_public"
   to anon, authenticated
   using (approved = true);
 
--- contacts: insert only for anon (no select for anon)
-create policy "contacts_insert_anon"
-  on public.contacts for insert
+-- contact_messages: insert only for anon (no select for anon)
+create policy "contact_messages_insert_anon"
+  on public.contact_messages for insert
   to anon, authenticated
   with check (true);
 
@@ -163,6 +194,18 @@ create policy "hire_requests_insert_anon"
 -- analytics: insert only for anon (no select for anon)
 create policy "analytics_insert_anon"
   on public.analytics for insert
+  to anon, authenticated
+  with check (true);
+
+-- site_config: public read (values are non-sensitive; writes via service role only)
+create policy "site_config_select_public"
+  on public.site_config for select
+  to anon, authenticated
+  using (true);
+
+-- referrals: insert only for anon (no public select)
+create policy "referrals_insert_anon"
+  on public.referrals for insert
   to anon, authenticated
   with check (true);
 
@@ -196,3 +239,11 @@ select 'Elite', '$2,499', 'project', 'Full Stack SaaS Platform',
   array['Complete platform build', 'AI feature integration', 'Payments (Stripe)', 'Analytics dashboard', '14-day delivery', 'Unlimited revisions']::text[],
   false, 2
 where not exists (select 1 from public.pricing where name = 'Elite');
+
+-- ── Seed: site_config (availability + booking)
+insert into public.site_config (key, value) values
+  ('availability_visible', 'true'),
+  ('availability_status', 'available'),
+  ('availability_message', 'Available for projects · Next slot: May 2026'),
+  ('calendly_url', 'https://calendly.com/yusufcreates')
+on conflict (key) do nothing;

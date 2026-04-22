@@ -2,25 +2,8 @@
 
 import { motion } from "framer-motion";
 
+import { getTechColor } from "@/lib/tech-colors";
 import { cn } from "@/lib/utils";
-
-const TECH_COLORS: Record<string, string> = {
-  React: "var(--react)",
-  "Next.js": "var(--ts)",
-  TypeScript: "var(--ts)",
-  JavaScript: "var(--js)",
-  Supabase: "var(--go)",
-  Tailwind: "var(--react)",
-  CSS: "var(--css)",
-  Python: "var(--python)",
-  Go: "var(--go)",
-  Rust: "var(--rust)",
-  HTML: "var(--html)",
-  ClaudeCode: "var(--react)",
-  Cursor: "var(--text-secondary)",
-  Vite: "var(--css)",
-  Git: "var(--rust)",
-};
 
 type TechBadgeProps = {
   tech: string;
@@ -29,10 +12,11 @@ type TechBadgeProps = {
 };
 
 export function TechBadge({ tech, size = "md", className }: TechBadgeProps) {
-  const color = TECH_COLORS[tech] ?? "var(--text-secondary)";
+  const color = getTechColor(tech);
 
   return (
     <motion.span
+      data-tech-color={color}
       whileHover={{
         scale: 1.02,
         boxShadow: `0 0 20px color-mix(in srgb, ${color} 28%, transparent)`,

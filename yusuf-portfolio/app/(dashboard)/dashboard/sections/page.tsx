@@ -1,7 +1,7 @@
-export default function DashboardSectionsPage() {
-  return (
-    <main className="p-8">
-      <h1 className="text-heading-lg font-semibold">Sections</h1>
-    </main>
-  );
+import { SectionsManager } from "@/components/dashboard/sections-manager";
+import { fetchDashboardPageSections } from "@/lib/dashboard-queries";
+
+export default async function DashboardSectionsPage() {
+  const sections = await fetchDashboardPageSections();
+  return <SectionsManager initialSections={sections} />;
 }

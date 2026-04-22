@@ -1,8 +1,7 @@
-export default function DashboardHomePage() {
-  return (
-    <main className="p-8">
-      <h1 className="text-heading-lg font-semibold">Dashboard</h1>
-      <p className="text-muted-foreground mt-2 text-body-sm">Overview.</p>
-    </main>
-  );
+import { DashboardOverviewClient } from "@/components/dashboard/dashboard-overview-client";
+import { fetchDashboardOverview } from "@/lib/dashboard-stats";
+
+export default async function DashboardOverviewPage() {
+  const data = await fetchDashboardOverview();
+  return <DashboardOverviewClient data={data} />;
 }
